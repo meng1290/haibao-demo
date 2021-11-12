@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>海报demo</title>
+  <style>
+      *{margin: 0;padding: 0;}
+      #app{background: olivedrab;height: 100vh;}
+      .box{position: relative;z-index: -1;}
+      .box .back{width: 100%;height: 100%;position: absolute;left: 0;top: 0;}
+      #qrcode{position: absolute;left: 122px;top: 220px;z-index: 9;}
+      .PostersImg{width: 344px;height: 344px;position: absolute;left: 0;right: 0;top: 0;bottom: 0;display: none;margin: auto;}
+      .PostersImg img{width: 100%;}
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- 生成前画报和二维码样式 -->
+    <div class="box" style="width: 344px;height: 344px;">
+      <img class="back" src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fpic.qiantucdn.com%2F58pic%2F27%2F08%2F16%2F02K58PICkMZ_1024.jpg%21%2Ffw%2F1024%2Fwatermark%2Furl%2FL2ltYWdlcy93YXRlcm1hcmsvZGF0dS5wbmc%3D%2Frepeat%2Ftrue%2Fcrop%2F0x1009a0a0&refer=http%3A%2F%2Fpic.qiantucdn.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1636881952&t=82b986a73cb74e89fed14d7f5d73d315" alt="">
+      <div id='qrcode'></div>
+    </div>
+    <!-- 生成后的画报图片 -->
+    <div class="PostersImg">
+      <img src="" alt="">
+    </div>
+    <!-- 生成按钮 -->
+    <input type="button"  value="生成画报" style="margin-left: 150px;margin-top: 20px;" onclick="addImg()"/>
+  </div>
+    
+  <script src="js/jquery.min.js"></script>
+  <script src="js/qrcode.js"></script>
+  <script src="js/html2canvas.js"></script>
+  <script>
+    //生成二维码
+    var qrcode = new QRCode("qrcode", {
+        text: "http://www.baidu.com",//二维码链接
+        width: 100,
+        height: 100,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : 0
+    });
+    //生成画报
+    function addImg(){
+      var copyDom = document.querySelector('.box');   //海报dom
+      var width = copyDom.offsetWidth;   //dom节点的宽度
+      var height = copyDom.offsetHeight;  //dom节点的高度
+      var canvas = document.createElement("canvas"); //创建canvas
+      var scale = 3; //放大三倍，让图片变的高清
+      //设定canvas 元素属性的宽高 = dom * 像素比
+      canvas.width = width * scale; 
+      canvas.height = height * scale;
+      canvas.getContext("2d")
+      var context = canvas.getContext('2d');
+      // 【重要】关闭抗锯齿
+      context.mozImageSmoothingEnabled = false;
+        context.webkitImageSmoothingEnabled = false;
+        context.msImageSmoothingEnabled = false;
+        context.imageSmoothingEnabled = false;
+      var opts = {
+          scale: scale,
+          canvas: canvas,
+          width: width,
+          height: height,
+          dpi:300,
+          useCORS: true,
+      };
+      html2canvas(copyDom, opts).then(canvas => { 
+        //图片跨域
+        canvas.setAttribute("crossOrigin",'anonymous');
+        //canvas转base64
+        let dataURL = canvas.toDataURL("image/png");
+        //展示海报弹框
+        $('.PostersImg img').attr('src', dataURL);
+        $('.PostersImg').show()
+  　　});
+    }
+  </script>
+</body>
+</html>
